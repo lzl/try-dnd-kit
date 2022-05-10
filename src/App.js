@@ -4,32 +4,50 @@ import { DndContext } from "@dnd-kit/core";
 import { Droppable } from "./Droppable";
 import { Draggable } from "./Draggable";
 
+const DRAG_DATA = ["A", "B", "C", "D"];
+
 function App() {
-  const containers = ["A", "B", "C"];
-  const [parent, setParent] = React.useState(null);
-  const draggableMarkup = <Draggable id="draggable">Drag me</Draggable>;
+  const [list, setList] = React.useState([]);
+  const addToList = (component) => setList((l) => [...l, component]);
 
-  return (
-    <DndContext onDragEnd={handleDragEnd}>
-      {parent === null ? draggableMarkup : null}
-
-      {containers.map((id) => (
-        // We updated the Droppable component so it would accept an `id`
-        // prop and pass it to `useDroppable`
-        <Droppable key={id} id={id}>
-          {parent === id ? draggableMarkup : "Drop here"}
-        </Droppable>
-      ))}
-    </DndContext>
-  );
+  function handleDragStart(event) {
+    console.log("=== onDragStart ===");
+    console.log("event:", event);
+  }
 
   function handleDragEnd(event) {
-    const { over } = event;
+    console.log("=== onDragEnd ===");
+    console.log("event:", event);
 
-    // If the item is dropped over a container, set it as the parent
-    // otherwise reset the parent to `null`
-    setParent(over ? over.id : null);
+    const { over, active } = event;
+    if (over) addToList(active.id);
   }
+
+  return (
+    <div style={{ display: "flex", gap: "8px", padding: "8px" }}>
+      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <div>
+          {DRAG_DATA.map((id) => (
+            <Draggable id={id}>{id}</Draggable>
+          ))}
+
+          <ol>
+            {list.map((c) => (
+              <li>{c}</li>
+            ))}
+          </ol>
+        </div>
+
+        <Droppable id="PAGE">
+          <ul>
+            {list.map((c) => (
+              <li>{c}</li>
+            ))}
+          </ul>
+        </Droppable>
+      </DndContext>
+    </div>
+  );
 }
 
 export default App;
