@@ -19,6 +19,11 @@ function App() {
     console.log("event:", event);
   }
 
+  function handleDragOver(event) {
+    console.log("=== App onDragOver ===");
+    console.log("event:", event);
+  }
+
   function handleDragEnd(event) {
     console.log("=== App onDragEnd ===");
     console.log("event:", event);
@@ -29,19 +34,27 @@ function App() {
 
   return (
     <div style={{ display: "flex", gap: "8px", padding: "8px" }}>
-      <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+      <DndContext
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+      >
         <div>
           {DRAG_DATA.map((id) => (
-            <Draggable id={id}>{id}</Draggable>
+            <Draggable key={id} id={id}>
+              {id}
+            </Draggable>
           ))}
 
-          <SortableList items={list} reorder={reorder} />
+          <Droppable id="SORT">
+            <SortableList items={list} reorder={reorder} />
+          </Droppable>
         </div>
 
         <Droppable id="PAGE">
           <ul>
             {list.map((c) => (
-              <li>{c}</li>
+              <li key={c}>{c}</li>
             ))}
           </ul>
         </Droppable>
